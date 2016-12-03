@@ -1,0 +1,24 @@
+{
+    "name": "morrizon/ToDDDoList",
+    "description": "Experiment to test DDD via some useful tools as CQRS and DI frameworks.",
+    "type": "pet-project",
+    "require": {
+        "simple-bus/message-bus": "^2.2",
+        "pimple/pimple": "~3.0",
+        "symfony/console": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "authors": [
+        {
+            "name": "Carlos López",
+            "email": "cladev@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ToDDDoList\\": "src/"
+        }
+    }
+}
