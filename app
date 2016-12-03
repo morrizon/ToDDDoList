@@ -1,9 +1,5 @@
 #!/usr/bin/env php
 <?php
-require __DIR__.'/vendor/autoload.php';
-
-use Symfony\Component\Console\Application;
-
-$app = new Application();
+require __DIR__.'/bootstrap/app.php';
 
 $app->run();
