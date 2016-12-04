@@ -27,5 +27,6 @@ class CreateUserCommandTest extends TestCase
         $tasks = $this->taskRepository->getAll();
         $this->assertEquals(1, count($tasks));
         $this->assertEquals($expectedTitle, $tasks[0]->getTitle());
+        $this->assertFalse($tasks[0]->done());
     }
 }

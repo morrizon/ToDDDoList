@@ -16,4 +16,9 @@ class Task
     {
         return $this->title;
     }
+
+    public function done()
+    {
+        return $this->done;
+    }
 }
