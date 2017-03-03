@@ -3,8 +3,9 @@ namespace ToDDDoList\Context\Task\Domain\Create;
 
 use PHPUnit\Framework\TestCase;
 use ToDDDoList\Context\Task\Infrastructure\Persistence\TaskRepositoryMemory;
+use ToDDDoList\Context\Task\Domain\Exception\InvalidTaskArgumentException;
 
-class CreateUserCommandTest extends TestCase
+class CreateTaskTest extends TestCase
 {
     private $taskRepository;
 
@@ -13,7 +14,26 @@ class CreateUserCommandTest extends TestCase
         $this->taskRepository = new TaskRepositoryMemory();
     }
 
-    public function testExecute()
+    /**
+     * @test
+     * @expectedException ToDDDoList\Context\Task\Domain\Exception\InvalidTaskArgumentException
+     */
+    public function shouldFailWhenCreateNewTaskWithoutTitle()
+    {
+        global $app;
+
+        $expectedTitle = '';
+
+        $command = new CreateTaskCommand($expectedTitle);
+        $taskFactory = new TaskFactory($this->taskRepository);
+        $commandHandler = new CreateTaskCommandHandler($taskFactory);
+        $commandHandler->__invoke($command);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldCreateNewTaskAndPersistIt()
     {
         global $app;
 
