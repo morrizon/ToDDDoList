@@ -16,7 +16,7 @@
   - ListTasks
 
 * Ubiquitous language
-  - Task: see entity *Task*. The tasks can be *created* and *list*.
+  - Task: see entity *Task*. The tasks can be *created* and *listed*.
 
 * References
   - [PHP Dependency Injection Container](http://pimple.sensiolabs.org/)
