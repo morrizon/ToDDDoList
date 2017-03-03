@@ -5,7 +5,10 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class CreateUserCommandTest extends TestCase
 {
-    public function testExecute()
+    /**
+     * @test
+     */
+    public function shouldCreateTaskViaCommand()
     {
         global $app;
 
