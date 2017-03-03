@@ -11,6 +11,16 @@ use ToDDDoList\Context\Task\Domain\Create\TaskFactory;
 
 use ToDDDoList\Context\Task\Infrastructure\Persistence\TaskRepositoryMemory;
 
+use SimpleBus\Message\Bus\Middleware\MessageBusSupportingMiddleware;
+use SimpleBus\Message\Bus\Middleware\FinishesHandlingMessageBeforeHandlingNext;
+use SimpleBus\Message\CallableResolver\CallableCollection;
+use SimpleBus\Message\CallableResolver\ServiceLocatorAwareCallableResolver;
+use SimpleBus\Message\Name\ClassBasedNameResolver;
+use ToDDDoList\Context\Task\Domain\Create\TaskWasCreatedEvent;
+use ToDDDoList\Context\Task\Domain\Create\NotifyWhenTaskCreated;
+use SimpleBus\Message\Subscriber\Resolver\NameBasedMessageSubscriberResolver;
+use SimpleBus\Message\Subscriber\NotifiesMessageSubscribersMiddleware;
+
 class Application extends ConsoleApplication
 {
     private $container;
@@ -49,6 +59,38 @@ class Application extends ConsoleApplication
                 $c,
                 $commandHandlersByCommandName
             );
+        });
+
+        $this->container->setService(NotifyWhenTaskCreated::class, function ($c) {
+            return new NotifyWhenTaskCreated();
+        });
+
+        $this->container->setService('event-bus', function ($c) {
+            // Provide a map of event names to callables. You can provide actual callables, or lazy-loading ones.
+            $eventSubscribersByEventName = [
+                TaskWasCreatedEvent::class => [
+                    NotifyWhenTaskCreated::class,
+                ],
+            ];
+			$serviceLocator = $this;//$app
+			$eventSubscriberCollection = new CallableCollection(
+				$eventSubscribersByEventName,
+				new ServiceLocatorAwareCallableResolver(array($serviceLocator, 'getService'))
+			);
+			$eventNameResolver = new ClassBasedNameResolver();
+			$eventSubscribersResolver = new NameBasedMessageSubscriberResolver(
+				$eventNameResolver,
+				$eventSubscriberCollection
+			);
+            $eventBus = new MessageBusSupportingMiddleware();
+            $eventBus->appendMiddleware(new FinishesHandlingMessageBeforeHandlingNext());
+
+			$eventBus->appendMiddleware(
+				new NotifiesMessageSubscribersMiddleware(
+					$eventSubscribersResolver
+				)
+			);
+            return $eventBus;
         });
     }
 

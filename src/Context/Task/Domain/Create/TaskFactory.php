@@ -18,5 +18,8 @@ class TaskFactory
         $done = false;
         $task = new Task($title, $done);
         $this->repository->save($task);
+
+		global $app;
+        $app->getService('event-bus')->handle(new TaskWasCreatedEvent);
     }
 }
