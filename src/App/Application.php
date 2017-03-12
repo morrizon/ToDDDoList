@@ -32,7 +32,8 @@ class Application extends ConsoleApplication
 
         $this->container->setService('task-factory', function ($c) {
             return new TaskFactory(
-                $c->getService('task-repository')
+                $c->getService('task-repository'),
+                $c->getService('event-bus')
             );
         });
 

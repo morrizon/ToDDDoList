@@ -8,9 +8,10 @@ class TaskFactory
 {
     private $repository;
 
-    public function __construct(TaskRepository $repository)
+    public function __construct(TaskRepository $repository, $eventBus)
     {
         $this->repository = $repository;
+        $this->eventBus = $eventBus;
     }
 
     public function createTask($title)
@@ -19,7 +20,6 @@ class TaskFactory
         $task = new Task($title, $done);
         $this->repository->save($task);
 
-		global $app;
-        $app->getService('event-bus')->handle(new TaskWasCreatedEvent);
+        $this->eventBus->handle(new TaskWasCreatedEvent);
     }
 }

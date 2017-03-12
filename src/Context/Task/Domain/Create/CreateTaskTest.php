@@ -8,10 +8,12 @@ use ToDDDoList\Context\Task\Domain\Exception\InvalidTaskArgumentException;
 class CreateTaskTest extends TestCase
 {
     private $taskRepository;
+    private $handledEvents;
 
     public function setUp()
     {
         $this->taskRepository = new TaskRepositoryMemory();
+        $this->handledEvents = [];
     }
 
     /**
@@ -20,12 +22,10 @@ class CreateTaskTest extends TestCase
      */
     public function shouldFailWhenCreateNewTaskWithoutTitle()
     {
-        global $app;
-
         $expectedTitle = '';
 
         $command = new CreateTaskCommand($expectedTitle);
-        $taskFactory = new TaskFactory($this->taskRepository);
+        $taskFactory = new TaskFactory($this->taskRepository, $this);
         $commandHandler = new CreateTaskCommandHandler($taskFactory);
         $commandHandler->__invoke($command);
     }
@@ -35,12 +35,10 @@ class CreateTaskTest extends TestCase
      */
     public function shouldCreateNewTaskAndPersistIt()
     {
-        global $app;
-
         $expectedTitle = 'My first task!';
 
         $command = new CreateTaskCommand($expectedTitle);
-        $taskFactory = new TaskFactory($this->taskRepository);
+        $taskFactory = new TaskFactory($this->taskRepository, $this);
         $commandHandler = new CreateTaskCommandHandler($taskFactory);
         $commandHandler->__invoke($command);
 
@@ -48,5 +46,14 @@ class CreateTaskTest extends TestCase
         $this->assertEquals(1, count($tasks));
         $this->assertEquals($expectedTitle, $tasks[0]->getTitle());
         $this->assertFalse($tasks[0]->done());
+        $this->assertEquals([new TaskWasCreatedEvent], $this->handledEvents);
+    }
+
+    /**
+     * Self Shunt patter to verify handled events
+     */
+    public function handle($event)
+    {
+        $this->handledEvents[] = $event;
     }
 }
