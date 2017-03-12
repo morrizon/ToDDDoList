@@ -10,7 +10,6 @@ use ToDDDoList\Context\Task\Domain\Create\CreateTaskCommand;
 use ToDDDoList\Context\Task\Domain\Create\CreateTaskCommandHandler;
 use ToDDDoList\Context\Task\Domain\Create\TaskFactory;
 use ToDDDoList\Context\Task\Domain\Create\TaskWasCreatedEvent;
-use ToDDDoList\Context\Task\Domain\Create\NotifyWhenTaskCreated;
 
 use ToDDDoList\Context\Task\Infrastructure\Persistence\TaskRepositoryMemory;
 
@@ -55,15 +54,10 @@ class Application extends ConsoleApplication
             );
         });
 
-        $this->container->setService(NotifyWhenTaskCreated::class, function ($c) {
-            return new NotifyWhenTaskCreated();
-        });
-
         $this->container->setService('event-bus', function ($c) {
             // Provide a map of event names to callables. You can provide actual callables, or lazy-loading ones.
             $eventSubscribersByEventName = [
                 TaskWasCreatedEvent::class => [
-                    NotifyWhenTaskCreated::class,
                 ],
             ];
             $factory = new EventBusFactory();

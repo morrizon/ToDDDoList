@@ -29,6 +29,5 @@ class CreateUserCommandTest extends TestCase
         // the output of the command in the console
         $output = $commandTester->getDisplay();
         $this->assertContains($expectedTitle, $output);
-
     }
 }
